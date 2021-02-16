@@ -9,6 +9,7 @@ class SQL():
         self.Search = Search
         self.dbname = dbname
         self.sql_path = os.path.join(os.getcwd(), self.dbname)
+        self.level = 1
 
     def Init(self):
         self.connection = sqlite3.connect(self.sql_path)
@@ -48,7 +49,26 @@ class SQL():
             update_name = update_pair.split(":")[0]
             update_value = update_pair.split(":")[1]
             update = ("UPDATE PPID_CONTENT SET %s='%s' WHERE Uuid='%s'" %(update_name, update_value, self.Search.Uuid()))
-            print(update)
             self.cursor.execute(update)
-
         self.Close()
+
+    def Select(self, level):
+        self.Init()
+        self.level = level
+        
+        if self.Search.uuid == False and self.Search.name != False:
+            select = ("SELECT Uuid, Parent FROM PPID_CONTENT WHERE Name='%s'" %(self.Search.name))
+            self.cursor.execute(select)
+            print(self.cursor.fetchall())
+        elif self.Search.uuid != False and self.Search.name == False:
+            select = ("SELECT Uuid, Parent FROM PPID_CONTENT WHERE Uuid='%s'" %(self.Search.uuid))
+            self.cursor.execute(select)
+            print(self.cursor.fetchall())
+            
+        else:
+            print("'--uuid' or '--name' two parameters must be have one")
+        
+        self.Close()
+
+
+    

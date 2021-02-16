@@ -22,6 +22,10 @@ class Search():
         self.uuid = uuid
         self.update = update
 
+    def PRINT(self, uuid, name):
+        self.uuid = uuid
+        self.name = name
+
     def Uuid(self):
         if self.uuid:
             return self.uuid

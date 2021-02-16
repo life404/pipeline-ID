@@ -4,7 +4,7 @@ import os
 import sys
 from Search import *
 import argparse
-import SQL
+from SQL import *
 
 def make_args():
     parse = argparse.ArgumentParser(prog="PPID")
@@ -30,13 +30,20 @@ def make_args():
     parse_remove.add_argument("-d", "--db", type=str, default="PPID.db", help="The datebase name of PPID")
     parse_remove.set_defaults(func=Remove_db)
 
+    parse_print = subparse.add_parser("print", help="The subcommand of `PRINT`")
+    parse_print.add_argument("-l", "--level", default=1, type=int, help="The show level of tree format")
+    parse_print.add_argument("-u", "--uuid", type=str, default=False, help="the unique identifier of Research, default is the code producted by uuid")
+    parse_print.add_argument("-n", "--name", type=str, default=False, help="the alias of research, default is the uuid of research")
+    parse_print.add_argument("-d", "--db", type=str, default="PPID.db", help="The datebase name of PPID")
+    parse_print.set_defaults(func=Print_item)
+
     args = parse.parse_args()
     return args
 
 def Add_item(args):
     search = Search()
     search.ADD(path=args.input, commit=args.commit, name=args.name, parent=args.parent, uuid=args.uuid)
-    database = SQL.SQL(Search=search, dbname=args.db)
+    database = SQL(Search=search, dbname=args.db)
     database.Add()
 
 def Update_item(args):
@@ -44,8 +51,7 @@ def Update_item(args):
         if args.uuid:
             search = Search()
             search.UPDATE(uuid=args.uuid, update=args.update)
-            print(search.Update())
-            database = SQL.SQL(Search=search, dbname=args.db)
+            database = SQL(Search=search, dbname=args.db)
             database.Update()
         else:
             print("In 'UPDATE' mode, `--update` and `--uuid` two parameters were required")
@@ -54,8 +60,17 @@ def Update_item(args):
 
 def Remove_db(args):
     search = Search()
-    database = SQL.SQL(Search=search, dbname=args.db)
+    database = SQL(Search=search, dbname=args.db)
     database.Remove()
+
+def Print_item(args):
+    if args.uuid or args.name:
+        search = Search()
+        search.PRINT(uuid=args.uuid, name=args.name)
+        database = SQL(Search=search, dbname=args.db)
+        database.Select(args.level)
+    else:
+        print("'--uuid' or '--name' two parameters must be have one")
 
 def main():
     args = make_args()
