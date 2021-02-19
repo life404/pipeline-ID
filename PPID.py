@@ -31,11 +31,19 @@ def make_args():
     parse_remove.set_defaults(func=Remove_db)
 
     parse_print = subparse.add_parser("print", help="The subcommand of `PRINT`")
-    parse_print.add_argument("-l", "--level", default=1, type=int, help="The show level of tree format")
     parse_print.add_argument("-u", "--uuid", type=str, default=False, help="the unique identifier of Research, default is the code producted by uuid")
     parse_print.add_argument("-n", "--name", type=str, default=False, help="the alias of research, default is the uuid of research")
     parse_print.add_argument("-d", "--db", type=str, default="PPID.db", help="The datebase name of PPID")
     parse_print.set_defaults(func=Print_item)
+
+    parse_tree = subparse.add_parser("tree", help="The tree subcommand of `TREE`")
+    parse_tree.add_argument("-l", "--level", type=int, default=0, help="The tree level of tree formats")
+    parse_tree.add_argument("-u", "--uuid", type=str, default=False, help="the unique identifier of Research, default is the code producted by uuid")
+    parse_tree.add_argument("-n", "--name", type=str, default=False, help="the alias of research, default is the uuid of research")
+    parse_tree.add_argument("-d", "--db", type=str, default="PPID.db", help="The datebase name of PPID")
+    parse_tree.add_argument("--column", type=str, default="all", help="print what you want")
+    parse_tree.set_defaults(func=Tree_item)
+
 
     args = parse.parse_args()
     return args
@@ -68,9 +76,16 @@ def Print_item(args):
         search = Search()
         search.PRINT(uuid=args.uuid, name=args.name)
         database = SQL(Search=search, dbname=args.db)
-        database.Select(args.level)
+        database.Select()
     else:
         print("'--uuid' or '--name' two parameters must be have one")
+
+def Tree_item(args):
+    search = Search()
+    search.TREE(uuid=args.uuid, name=args.name)
+    database = SQL(Search=search, dbname=args.db)
+    database.Tree()
+
 
 def main():
     args = make_args()

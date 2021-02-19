@@ -25,6 +25,10 @@ class Search():
     def PRINT(self, uuid, name):
         self.uuid = uuid
         self.name = name
+    
+    def TREE(self, uuid, name):
+        self.uuid = uuid
+        self.name = name
 
     def Uuid(self):
         if self.uuid:
